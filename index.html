@@ -569,6 +569,10 @@ function cardHTML(p){
       </div>
       ${isAdmin?`
       <div class="admin-actions">
+        ${!isOld(p.tanggal)&&p.aktif
+          ? `<button class="edit-btn" onclick="toggleArsip('${p._id}',false)" style="color:var(--muted)">📁 Arsipkan</button>`
+          : `<button class="edit-btn" onclick="toggleArsip('${p._id}',true)" style="color:var(--green)">🔄 Pulihkan</button>`
+        }
         <button class="edit-btn" onclick="openFormModal('${p._id}')">✏️ Edit</button>
         <button class="del-btn-card" onclick="openDelModal('${p._id}')">🗑️</button>
       </div>`:""}
@@ -647,8 +651,12 @@ async function submitPengumuman(){
   showToast(editingId?"✅ Pengumuman diperbarui!":"✅ Pengumuman berhasil dibuat!","success");
 }
 
-// ══════════════════════════════════════════════════
-// DELETE
+async function toggleArsip(id, aktif){
+  const p=pengumuman.find(x=>x._id===id);
+  if(!p) return;
+  await savePeng({...p, aktif}, id);
+  showToast(aktif?"✅ Pengumuman dipulihkan!":"📁 Pengumuman diarsipkan.","info");
+}
 // ══════════════════════════════════════════════════
 function openDelModal(id){pendingDelId=id;document.getElementById("del-overlay").classList.remove("hidden");}
 function closeDelModal(){document.getElementById("del-overlay").classList.add("hidden");pendingDelId=null;}
